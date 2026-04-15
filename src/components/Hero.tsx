@@ -1,13 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import {
-  ArrowDown,
-  Github,
-  ExternalLink,
-  Code,
-  Database,
-  Cloud,
-} from "lucide-react";
+import { Github } from "lucide-react";
 
 const Hero: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
