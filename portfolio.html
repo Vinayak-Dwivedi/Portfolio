@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sculpted Gallery — Visual Architect & 3D Artist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --surface: #0d1225;
+    --surface2: #111827;
+    --border: rgba(255,255,255,0.06);
+    --text: #e8eaf0;
+    --muted: #6b7280;
+    --accent: #4f9eff;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --glow: rgba(79,158,255,0.15);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  #cursor {
+    position: fixed; width: 12px; height: 12px;
+    background: var(--accent); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, background 0.3s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    position: fixed; width: 40px; height: 40px;
+    border: 1px solid rgba(79,158,255,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.15s cubic-bezier(0.23,1,0.32,1), width 0.3s, height 0.3s, border-color 0.3s;
+  }
+  body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring {
+    width: 60px; height: 60px; border-color: rgba(167,139,250,0.6);
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    backdrop-filter: blur(20px);
+    background: rgba(5,8,16,0.7);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 16px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav ul { list-style: none; display: flex; gap: 36px; }
+  nav a {
+    font-size: 13px; font-weight: 500; letter-spacing: 0.04em;
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s; position: relative;
+  }
+  nav a::after {
+    content:''; position: absolute; bottom:-4px; left:0; width:0; height:1px;
+    background: var(--accent); transition: width 0.3s;
+  }
+  nav a:hover { color: var(--text); }
+  nav a:hover::after { width: 100%; }
+  .nav-cta {
+    background: var(--accent); color: #050810 !important;
+    padding: 10px 22px; border-radius: 100px;
+    font-weight: 600 !important; font-size: 13px;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+  }
+  .nav-cta:hover { transform: scale(1.05); box-shadow: 0 0 24px rgba(79,158,255,0.4); }
+  .nav-cta::after { display: none !important; }
+
+  /* ── CANVAS BACKGROUND ── */
+  #hero-canvas {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; padding: 120px 48px 80px;
+    overflow: hidden;
+  }
+  .hero-left { position: relative; z-index: 2; }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: ''; width: 32px; height: 1px; background: var(--accent);
+  }
+  h1 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(52px, 6vw, 88px); line-height: 1.0;
+    letter-spacing: -0.03em; margin-bottom: 28px;
+  }
+  h1 .highlight { color: var(--accent); }
+  h1 .white { color: #fff; }
+  .hero-sub {
+    font-size: 16px; line-height: 1.7; color: var(--muted);
+    max-width: 380px; margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #050810;
+    padding: 14px 32px; border-radius: 100px;
+    font-weight: 600; font-size: 14px;
+    border: none; cursor: none;
+    transition: transform 0.2s, box-shadow 0.3s;
+    box-shadow: 0 0 32px rgba(79,158,255,0.3);
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 48px rgba(79,158,255,0.5); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    padding: 14px 32px; border-radius: 100px;
+    font-weight: 500; font-size: 14px; cursor: none;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, background 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.04); }
+
+  /* Hero 3D Orb */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; justify-content: center; align-items: center;
+  }
+  #orb-canvas { width: 440px; height: 440px; border-radius: 24px; }
+
+  /* Floating badges */
+  .hero-badge {
+    position: absolute; background: rgba(13,18,37,0.9);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 18px; backdrop-filter: blur(20px);
+    font-family: 'Space Mono', monospace; font-size: 11px;
+    animation: float 4s ease-in-out infinite;
+    z-index: 3;
+  }
+  .badge-1 { bottom: 80px; left: -20px; animation-delay: 0s; }
+  .badge-2 { top: 80px; right: -20px; animation-delay: 2s; }
+  .badge-num { font-size: 24px; font-weight: 700; color: var(--accent); font-family: 'Syne', sans-serif; }
+  .badge-label { color: var(--muted); margin-top: 2px; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  /* scroll indicator */
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 48px; z-index: 5;
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 40px; height: 1px; background: var(--muted);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content:''; position: absolute; top:0; left:-100%; width:100%; height:100%;
+    background: var(--accent); animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine { 0%{left:-100%} 100%{left:100%} }
+
+  /* ── SECTIONS GENERAL ── */
+  section { padding: 100px 48px; position: relative; }
+  .section-label {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: clamp(32px,4vw,48px); letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .section-sub { color: var(--muted); font-size: 15px; }
+  .section-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 56px;
+  }
+  .view-all {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.2s; white-space: nowrap;
+  }
+  .view-all:hover { color: var(--accent); }
+  .view-all svg { transition: transform 0.2s; }
+  .view-all:hover svg { transform: translateX(4px); }
+
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden; border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0; margin-bottom: 0;
+    background: var(--surface);
+  }
+  .marquee-track {
+    display: flex; gap: 48px; width: max-content;
+    animation: marquee 20s linear infinite;
+  }
+  .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .marquee-item {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; gap: 24px; white-space: nowrap;
+  }
+  .marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+
+  /* ── WORKS GRID ── */
+  .works-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 16px;
+  }
+  .work-card {
+    background: var(--surface); border-radius: 20px;
+    overflow: hidden; position: relative; cursor: none;
+    border: 1px solid var(--border);
+    transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), border-color 0.3s;
+  }
+  .work-card:hover { transform: translateY(-6px); border-color: rgba(79,158,255,0.2); }
+  .work-card.large { grid-row: span 2; }
+  .work-card .card-img {
+    width: 100%; aspect-ratio: 4/3;
+    object-fit: cover; display: block;
+    transition: transform 0.6s cubic-bezier(0.23,1,0.32,1);
+  }
+  .work-card.large .card-img { aspect-ratio: 3/4; height: 100%; }
+  .work-card:hover .card-img { transform: scale(1.04); }
+  .card-info {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 24px 20px 20px;
+    background: linear-gradient(0deg, rgba(5,8,16,0.95) 0%, transparent 100%);
+  }
+  .card-tag {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 18px; margin-bottom: 6px;
+  }
+  .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  /* small cards no image, just canvas */
+  .card-no-img { height: 180px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .card-icon { font-size: 40px; filter: drop-shadow(0 0 12px rgba(79,158,255,0.5)); }
+
+  /* ── STATS ── */
+  .stats-section {
+    background: var(--surface);
+    border-radius: 28px; padding: 64px 72px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 48px; margin: 0 48px;
+    border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .stats-section::before {
+    content:''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(79,158,255,0.04) 0%, transparent 100%);
+  }
+  .stat { position: relative; }
+  .stat-num {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 56px; color: var(--accent); letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 16px; font-weight: 600; margin: 8px 0 4px;
+  }
+  .stat-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── INSIGHTS ── */
+  .insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .insight-card {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; align-items: center; padding: 56px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .insight-card:nth-child(2) { direction: rtl; }
+  .insight-card:nth-child(2) .insight-text { direction: ltr; padding-right: 0; padding-left: 56px; }
+  .insight-img-wrap {
+    border-radius: 20px; overflow: hidden;
+    aspect-ratio: 4/3; background: var(--surface);
+  }
+  .insight-img-wrap canvas { width: 100%; height: 100%; display: block; }
+  .insight-text { padding: 0 0 0 56px; }
+  .insight-meta {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 0.2em; color: var(--muted); margin-bottom: 16px;
+  }
+  .insight-title {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: clamp(22px,3vw,32px); line-height: 1.2;
+    margin-bottom: 16px; letter-spacing: -0.02em;
+    font-style: italic;
+  }
+  .insight-body { font-size: 14px; color: var(--muted); line-height: 1.8; margin-bottom: 24px; }
+  .read-more {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 500; color: var(--accent);
+    text-decoration: none; transition: gap 0.2s;
+  }
+  .read-more:hover { gap: 14px; }
+
+  /* ── CTA ── */
+  .cta-section {
+    text-align: center; padding: 120px 48px;
+    position: relative; overflow: hidden;
+  }
+  .cta-section h2 {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: clamp(48px,7vw,96px); line-height: 1.0;
+    letter-spacing: -0.04em; margin-bottom: 20px;
+  }
+  .cta-section h2 .accent { color: var(--accent); display: block; }
+  .cta-sub { font-size: 15px; color: var(--muted); margin-bottom: 48px; }
+  .email-form {
+    display: flex; gap: 12px; max-width: 440px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 6px 6px 24px;
+  }
+  .email-form input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text); font-size: 14px; font-family: 'DM Sans', sans-serif;
+  }
+  .email-form input::placeholder { color: var(--muted); }
+  .email-form button {
+    background: var(--accent); color: #050810; border: none;
+    padding: 12px 24px; border-radius: 100px;
+    font-weight: 600; font-size: 14px; cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .email-form button:hover { transform: scale(1.04); box-shadow: 0 0 24px rgba(79,158,255,0.4); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border); padding: 40px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .footer-links { display: flex; gap: 32px; }
+  .footer-links a {
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--text); }
+  .footer-copy { font-size: 12px; color: var(--muted); }
+
+  /* ── REVEAL ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* ── NOISE OVERLAY ── */
+  .noise {
+    position: fixed; inset: 0; z-index: 50; pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Divider glow line */
+  .glow-divider {
+    height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3; margin: 0 48px;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-right { display: none; }
+    section { padding: 72px 24px; }
+    .works-grid { grid-template-columns: 1fr; }
+    .work-card.large { grid-row: span 1; }
+    .stats-section { grid-template-columns: 1fr; margin: 0 24px; padding: 40px 32px; gap: 32px; }
+    .insight-card { grid-template-columns: 1fr; }
+    .insight-card:nth-child(2) { direction: ltr; }
+    .insight-text { padding: 24px 0 0 0 !important; }
+    footer { flex-direction: column; gap: 24px; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+    .glow-divider { margin: 0 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAVIGATION -->
+<nav>
+  <a href="#" class="logo">Sculpted<span>.</span></a>
+  <ul>
+    <li><a href="#works">Work</a></li>
+    <li><a href="#">Studio</a></li>
+    <li><a href="#">Exhibitions</a></li>
+    <li><a href="#">Journal</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Contact</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-left">
+    <div class="hero-tag">Visual Architect & 3D Artist</div>
+    <h1>
+      <span class="white">Sculpting</span><br>
+      <span class="highlight">Digital</span> <span class="white">Depth.</span>
+    </h1>
+    <p class="hero-sub">An immersive exploration into the intersection of light, form, and ethereal dimensions. We curate experiences that transcend the flat screen.</p>
+    <div class="hero-actions">
+      <a href="#works" class="btn-primary">View Work</a>
+      <a href="#cta" class="btn-ghost">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <canvas id="orb-canvas"></canvas>
+    <div class="hero-badge badge-1">
+      <div class="badge-num">12+</div>
+      <div class="badge-label">Global Awards</div>
+    </div>
+    <div class="hero-badge badge-2">
+      <div class="badge-num">140</div>
+      <div class="badge-label">Projects Delivered</div>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Scroll to explore</span>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item">3D Sculpting <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Design <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Procedural Art <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Visual Identity <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Interactive Web <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Immersive XR <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Generative AI Art <span class="marquee-dot"></span></div>
+    <div class="marquee-item">3D Sculpting <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Design <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Procedural Art <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Visual Identity <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Interactive Web <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Immersive XR <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Generative AI Art <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- SELECTED WORKS -->
+<section id="works">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Selected Creations</div>
+      <div class="section-title">Where physics meets imagination.</div>
+    </div>
+    <a href="#" class="view-all">View All Work <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  </div>
+  <div class="works-grid">
+    <!-- Large card -->
+    <div class="work-card large reveal reveal-delay-1">
+      <canvas class="card-img" id="card-obelisk"></canvas>
+      <div class="card-info">
+        <div class="card-tag">Motion Study</div>
+        <div class="card-title">The Liquid Obelisk</div>
+        <div class="card-desc">Exploring the fluidity of solid geometry through high-fidelity procedural animation and refraction mapping.</div>
+      </div>
+    </div>
+    <!-- Top right -->
+    <div class="work-card reveal reveal-delay-2">
+      <canvas class="card-img" id="card-neon"></canvas>
+      <div class="card-info">
+        <div class="card-tag">CG Art</div>
+        <div class="card-title">Neon Drift</div>
+      </div>
+    </div>
+    <!-- Top far right -->
+    <div class="work-card reveal reveal-delay-3">
+      <canvas class="card-img" id="card-cyanic"></canvas>
+      <div class="card-info">
+        <div class="card-tag">Series</div>
+        <div class="card-title">Cyanic Echo</div>
+      </div>
+    </div>
+    <!-- Bottom right small -->
+    <div class="work-card card-no-img reveal reveal-delay-4" style="background:var(--surface2);">
+      <canvas id="card-asset" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+      <div class="card-info" style="position:relative;">
+        <div class="card-tag">Library</div>
+        <div class="card-title">Asset Library</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- STATS -->
+<div style="padding: 80px 0;">
+  <div class="stats-section reveal">
+    <div class="stat">
+      <div class="stat-num" data-target="12">0</div>
+      <div class="stat-label">Global Awards</div>
+      <div class="stat-desc">Recognized by Awwwards, FWA, and CSSDA for excellence in immersive design.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-target="140">0</div>
+      <div class="stat-label">Projects Delivered</div>
+      <div class="stat-desc">From boutique fashion houses to Fortune 500 tech giants.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">01</div>
+      <div class="stat-label">Core Vision</div>
+      <div class="stat-desc">To make the digital world feel as tangible and emotive as the physical one.</div>
+    </div>
+  </div>
+</div>
+
+<div class="glow-divider"></div>
+
+<!-- LATEST INSIGHTS -->
+<section>
+  <div class="section-header reveal">
+    <div>
+      <div class="section-label">Latest Insights</div>
+      <div class="section-title">Thinking out loud.</div>
+    </div>
+  </div>
+
+  <div class="insight-card reveal">
+    <div class="insight-img-wrap">
+      <canvas id="insight-canvas-1" style="width:100%;height:100%;display:block;"></canvas>
+    </div>
+    <div class="insight-text">
+      <div class="insight-meta">JOURNAL — 01.24</div>
+      <div class="insight-title">The Psychology of Depth in Flat Interfaces.</div>
+      <p class="insight-body">How subtle 3D cues and z-axis layering can dramatically increase user engagement and trust in premium digital environments.</p>
+      <a href="#" class="read-more">Read Full Article →</a>
+    </div>
+  </div>
+
+  <div class="insight-card reveal">
+    <div class="insight-text" style="padding: 0 56px 0 0;">
+      <div class="insight-meta">INSIGHT — 12.23</div>
+      <div class="insight-title">Procedural Generation in Brand Identity.</div>
+      <p class="insight-body">Breaking the static logo mold by creating dynamic, ever-changing 3D brand assets that react to real-time user data.</p>
+      <a href="#" class="read-more">Read Full Article →</a>
+    </div>
+    <div class="insight-img-wrap">
+      <canvas id="insight-canvas-2" style="width:100%;height:100%;display:block;"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="cta">
+  <canvas id="cta-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;"></canvas>
+  <div style="position:relative;z-index:2;">
+    <h2 class="reveal">Ready to add<span class="accent">dimension?</span></h2>
+    <p class="cta-sub reveal reveal-delay-1">Join our quarterly bulletin on 3D trends, studio updates, and exclusive asset drops.</p>
+    <div class="email-form reveal reveal-delay-2">
+      <input type="email" placeholder="Email Address">
+      <button type="button">Subscribe</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Sculpted Gallery</div>
+  <div class="footer-links">
+    <a href="#">Instagram</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Behance</a>
+    <a href="#">Archive</a>
+  </div>
+  <div class="footer-copy">© 2024 Sculpted Gallery. All rights reserved.</div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animCursor() {
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+
+// ═══════════════════════════════════════
+// HERO PARTICLE FIELD
+// ═══════════════════════════════════════
+(function() {
+  const c = document.getElementById('hero-canvas');
+  const ctx = c.getContext('2d');
+  let W, H, particles = [], mouse = {x:-999,y:-999};
+
+  function resize() {
+    W = c.width = c.offsetWidth;
+    H = c.height = c.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', () => { resize(); init(); });
+
+  document.addEventListener('mousemove', e => {
+    const r = c.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.ox = this.x; this.oy = this.y;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r = Math.random() * 1.5 + 0.3;
+      this.a = Math.random() * 0.6 + 0.1;
+      this.hue = Math.random() < 0.3 ? 220 : (Math.random() < 0.5 ? 260 : 160);
+    }
+    update() {
+      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx*dx+dy*dy);
+      if (dist < 120) {
+        const force = (120-dist)/120;
+        this.x += dx/dist * force * 2;
+        this.y += dy/dist * force * 2;
+      }
+      this.x += (this.ox - this.x) * 0.04 + this.vx;
+      this.y += (this.oy - this.y) * 0.04 + this.vy;
+      this.ox += this.vx; this.oy += this.vy;
+      if (this.ox < 0) this.ox = W; if (this.ox > W) this.ox = 0;
+      if (this.oy < 0) this.oy = H; if (this.oy > H) this.oy = 0;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = `hsla(${this.hue},80%,70%,${this.a})`;
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    particles = [];
+    for (let i = 0; i < 200; i++) particles.push(new Particle());
+  }
+  init();
+
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i+1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < 90) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          const a = (1 - d/90) * 0.12;
+          ctx.strokeStyle = `rgba(79,158,255,${a})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function loop() {
+    ctx.clearRect(0,0,W,H);
+    // Draw radial gradient bg
+    const g = ctx.createRadialGradient(W*0.7, H*0.3, 0, W*0.7, H*0.3, W*0.7);
+    g.addColorStop(0, 'rgba(79,158,255,0.04)');
+    g.addColorStop(0.5, 'rgba(167,139,250,0.02)');
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawConnections();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+// ═══════════════════════════════════════
+// ORB / HERO RIGHT — Morphing 3D Sphere
+// ═══════════════════════════════════════
+(function() {
+  const c = document.getElementById('orb-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  c.width = 880; c.height = 880;
+  const W = c.width, H = c.height;
+  let t = 0;
+
+  function noise(x, y, z) {
+    // Simple pseudo noise
+    const a = Math.sin(x * 1.7 + z) * Math.cos(y * 1.3 + z * 0.7);
+    const b = Math.sin(y * 2.1 + z * 0.5) * Math.cos(x * 0.9 + z);
+    return (a + b) * 0.5;
+  }
+
+  function drawOrb() {
+    ctx.clearRect(0,0,W,H);
+    const cx = W/2, cy = H/2;
+    const R = 300;
+    const RINGS = 48, PTS = 120;
+
+    // Outer glow
+    const glow = ctx.createRadialGradient(cx,cy,0,cx,cy,R*1.4);
+    glow.addColorStop(0, 'rgba(79,158,255,0.08)');
+    glow.addColorStop(0.6, 'rgba(167,139,250,0.04)');
+    glow.addColorStop(1, 'transparent');
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(cx,cy,R*1.4,0,Math.PI*2); ctx.fill();
+
+    // Draw latitude rings
+    for (let i = 0; i <= RINGS; i++) {
+      const lat = (i/RINGS) * Math.PI;
+      const sliceR = Math.sin(lat) * R;
+      const sliceY = -Math.cos(lat) * R;
+
+      ctx.beginPath();
+      for (let j = 0; j <= PTS; j++) {
+        const lon = (j/PTS) * Math.PI * 2;
+        const n = noise(Math.sin(lat)*Math.cos(lon)*2, Math.sin(lat)*Math.sin(lon)*2, t*0.6) * 18;
+        const r = sliceR + n;
+        const y2 = sliceY + noise(lon, lat, t*0.4)*12;
+        const px = cx + r * Math.cos(lon);
+        const py = cy + y2 + r * Math.sin(lon) * 0.15;
+        j === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      const depth = (Math.cos(lat)+1)*0.5;
+      const hue = 200 + depth * 60;
+      const lum = 40 + depth * 40;
+      const alpha = 0.08 + depth * 0.18;
+      ctx.strokeStyle = `hsla(${hue},80%,${lum}%,${alpha})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+
+    // longitude lines
+    for (let j = 0; j < 24; j++) {
+      const lon = (j/24) * Math.PI*2;
+      ctx.beginPath();
+      for (let i = 0; i <= RINGS; i++) {
+        const lat = (i/RINGS) * Math.PI;
+        const sliceR = Math.sin(lat) * R;
+        const sliceY = -Math.cos(lat) * R;
+        const n = noise(Math.sin(lat)*Math.cos(lon)*2, Math.sin(lat)*Math.sin(lon)*2, t*0.6)*18;
+        const r = sliceR + n;
+        const y2 = sliceY + noise(lon, lat, t*0.4)*12;
+        const px = cx + r * Math.cos(lon);
+        const py = cy + y2 + r * Math.sin(lon)*0.15;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      const alpha = 0.06 + Math.abs(Math.cos(lon)) * 0.08;
+      ctx.strokeStyle = `rgba(79,158,255,${alpha})`;
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    // Inner shimmer
+    const shimmer = ctx.createRadialGradient(cx - R*0.2, cy - R*0.2, 0, cx, cy, R);
+    shimmer.addColorStop(0, 'rgba(255,255,255,0.05)');
+    shimmer.addColorStop(0.5, 'rgba(79,158,255,0.03)');
+    shimmer.addColorStop(1, 'transparent');
+    ctx.fillStyle = shimmer;
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+
+    t += 0.012;
+    requestAnimationFrame(drawOrb);
+  }
+  drawOrb();
+})();
+
+// ═══════════════════════════════════════
+// CARD CANVASES
+// ═══════════════════════════════════════
+function makeCardCanvas(id, drawFn) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  function resize() { c.width = c.offsetWidth*2; c.height = c.offsetHeight*2; }
+  resize();
+  const ctx = c.getContext('2d');
+  let t = 0;
+  function loop() {
+    ctx.clearRect(0,0,c.width,c.height);
+    drawFn(ctx, c.width, c.height, t);
+    t += 0.01;
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// Obelisk — sphere cluster
+makeCardCanvas('card-obelisk', (ctx, W, H, t) => {
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0a0e1a'); bg.addColorStop(1,'#111827');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+  const BALLS = 24;
+  for (let i = 0; i < BALLS; i++) {
+    const angle = (i/BALLS)*Math.PI*2 + t*0.3;
+    const dist = 80 + Math.sin(t*0.7+i)*30;
+    const x = W/2 + Math.cos(angle)*dist;
+    const y = H/2 + Math.sin(angle)*dist*0.4;
+    const r = 20 + Math.sin(t + i*0.8)*8;
+    const g = ctx.createRadialGradient(x-r*0.3, y-r*0.3, 0, x, y, r);
+    g.addColorStop(0,'rgba(80,100,130,0.9)');
+    g.addColorStop(0.5,'rgba(40,50,80,0.8)');
+    g.addColorStop(1,'rgba(10,15,30,0.9)');
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+  }
+  // center sphere
+  const cg = ctx.createRadialGradient(W/2-20,H/2-20,0,W/2,H/2,60);
+  cg.addColorStop(0,'rgba(100,130,180,0.95)');
+  cg.addColorStop(0.4,'rgba(50,70,120,0.9)');
+  cg.addColorStop(1,'rgba(10,15,30,0.95)');
+  ctx.beginPath(); ctx.arc(W/2,H/2,60,0,Math.PI*2);
+  ctx.fillStyle=cg; ctx.fill();
+});
+
+// Neon Drift — vertical light streaks
+makeCardCanvas('card-neon', (ctx, W, H, t) => {
+  ctx.fillStyle='#050810'; ctx.fillRect(0,0,W,H);
+  const lines = [
+    {x: W*0.35, col:'255,80,60', delay:0},
+    {x: W*0.5, col:'79,158,255', delay:0.5},
+    {x: W*0.65, col:'160,80,255', delay:1},
+  ];
+  lines.forEach(l => {
+    const pulse = 0.5 + Math.sin(t*1.5 + l.delay) * 0.3;
+    const gh = ctx.createLinearGradient(0,0,0,H);
+    gh.addColorStop(0,`rgba(${l.col},0)`);
+    gh.addColorStop(0.1 + Math.sin(t+l.delay)*0.05,`rgba(${l.col},${pulse})`);
+    gh.addColorStop(0.5,`rgba(${l.col},${pulse*0.8})`);
+    gh.addColorStop(0.9 - Math.sin(t+l.delay)*0.05,`rgba(${l.col},${pulse})`);
+    gh.addColorStop(1,`rgba(${l.col},0)`);
+    const w = 3 + Math.sin(t*2+l.delay)*1;
+    ctx.beginPath();
+    ctx.shadowColor = `rgba(${l.col},0.8)`;
+    ctx.shadowBlur = 20*pulse;
+    ctx.fillStyle = gh;
+    ctx.fillRect(l.x - w, 0, w*2, H);
+  });
+  ctx.shadowBlur = 0;
+  // floor glow
+  const fl = ctx.createRadialGradient(W/2, H, 0, W/2, H, W*0.5);
+  fl.addColorStop(0,'rgba(79,158,255,0.12)');
+  fl.addColorStop(1,'transparent');
+  ctx.fillStyle = fl; ctx.fillRect(0,0,W,H);
+});
+
+// Cyanic Echo — ripple waves
+makeCardCanvas('card-cyanic', (ctx, W, H, t) => {
+  ctx.fillStyle='#040c12'; ctx.fillRect(0,0,W,H);
+  for (let y = 0; y < H; y += 4) {
+    for (let x = 0; x < W; x += 4) {
+      const nx = x/W, ny = y/H;
+      const wave = Math.sin(nx*8 + t) + Math.sin(ny*6 - t*0.7) + Math.sin((nx+ny)*5 + t*0.5);
+      const bright = (wave+3)/6;
+      const hue = 160 + bright*40;
+      ctx.fillStyle=`hsla(${hue},70%,${20+bright*30}%,0.8)`;
+      ctx.fillRect(x,y,4,4);
+    }
+  }
+});
+
+// Asset Library — rotating cube
+makeCardCanvas('card-asset', (ctx, W, H, t) => {
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2, cy=H/2, S=60;
+  const cos=Math.cos(t), sin=Math.sin(t);
+  function project(x,y,z) {
+    const rx = x*cos - z*sin;
+    const rz = x*sin + z*cos;
+    const ry = y*Math.cos(t*0.7) - rz*Math.sin(t*0.7);
+    const rz2 = y*Math.sin(t*0.7) + rz*Math.cos(t*0.7);
+    const scale = 400/(400+rz2*0.5);
+    return [cx+rx*scale, cy+ry*scale];
+  }
+  const verts = [
+    [-S,-S,-S],[S,-S,-S],[S,S,-S],[-S,S,-S],
+    [-S,-S,S],[S,-S,S],[S,S,S],[-S,S,S]
+  ].map(v=>project(...v));
+  const faces = [[0,1,2,3],[4,5,6,7],[0,1,5,4],[2,3,7,6],[1,2,6,5],[0,3,7,4]];
+  const colors=['rgba(79,158,255,0.15)','rgba(167,139,250,0.15)','rgba(52,211,153,0.12)','rgba(79,158,255,0.1)','rgba(167,139,250,0.12)','rgba(52,211,153,0.08)'];
+  faces.forEach((f,i)=>{
+    ctx.beginPath();
+    verts[f[0]] && ctx.moveTo(...verts[f[0]]);
+    f.slice(1).forEach(fi=>{ verts[fi] && ctx.lineTo(...verts[fi]); });
+    ctx.closePath();
+    ctx.fillStyle=colors[i];
+    ctx.fill();
+    ctx.strokeStyle='rgba(79,158,255,0.4)';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+  });
+});
+
+// ═══════════════════════════════════════
+// INSIGHT CANVASES
+// ═══════════════════════════════════════
+function makeInsightCanvas(id, drawFn) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  let t = 0;
+  function resize() { c.width = c.offsetWidth*2; c.height = c.offsetHeight*2; }
+  resize();
+  const ctx = c.getContext('2d');
+  function loop() {
+    ctx.clearRect(0,0,c.width,c.height);
+    drawFn(ctx,c.width,c.height,t);
+    t += 0.008;
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+makeInsightCanvas('insight-canvas-1', (ctx,W,H,t)=>{
+  // Monitor with blue glow
+  ctx.fillStyle='#080d18'; ctx.fillRect(0,0,W,H);
+  // Screen glow
+  const sg = ctx.createRadialGradient(W*0.4,H*0.4,0,W*0.4,H*0.4,W*0.5);
+  sg.addColorStop(0,'rgba(79,158,255,0.15)');
+  sg.addColorStop(0.5,'rgba(79,158,255,0.05)');
+  sg.addColorStop(1,'transparent');
+  ctx.fillStyle=sg; ctx.fillRect(0,0,W,H);
+  // Desk surface
+  ctx.fillStyle='rgba(20,30,50,0.8)';
+  ctx.fillRect(0, H*0.75, W, H*0.25);
+  // Monitor body
+  ctx.fillStyle='#1a2035'; ctx.strokeStyle='rgba(79,158,255,0.3)'; ctx.lineWidth=2;
+  const mx=W*0.2, my=H*0.12, mw=W*0.6, mh=H*0.55;
+  ctx.beginPath(); ctx.roundRect(mx,my,mw,mh,8); ctx.fill(); ctx.stroke();
+  // Screen
+  ctx.fillStyle='#080f20'; ctx.fillRect(mx+8,my+8,mw-16,mh-24);
+  // Brain-like blob on screen
+  for(let i=0;i<5;i++){
+    const bx=mx+mw/2 + Math.cos(t+i*1.3)*20, by=my+mh/2 + Math.sin(t*0.7+i)*15;
+    const bg=ctx.createRadialGradient(bx,by,0,bx,by,40+Math.sin(t+i)*8);
+    bg.addColorStop(0,'rgba(79,158,255,0.3)'); bg.addColorStop(1,'transparent');
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(bx,by,40+Math.sin(t+i)*8,0,Math.PI*2); ctx.fill();
+  }
+  // Stand
+  ctx.fillStyle='#1a2035';
+  ctx.fillRect(mx+mw/2-5, my+mh, 10, H*0.12);
+  ctx.fillRect(mx+mw/2-30, my+mh+H*0.12, 60, 6);
+});
+
+makeInsightCanvas('insight-canvas-2', (ctx,W,H,t)=>{
+  ctx.fillStyle='#040c12'; ctx.fillRect(0,0,W,H);
+  const cx=W/2, cy=H/2;
+  for(let ring=0;ring<8;ring++){
+    const pts=60+ring*4;
+    for(let i=0;i<pts;i++){
+      const angle=(i/pts)*Math.PI*2+t*(0.1+ring*0.02);
+      const r=50+ring*30 + Math.sin(angle*3+t)*8;
+      const x=cx+Math.cos(angle)*r;
+      const y=cy+Math.sin(angle)*r*0.45;
+      const bright=0.3+Math.sin(angle*2+t+ring)*0.3;
+      ctx.beginPath();
+      ctx.arc(x,y,1.5,0,Math.PI*2);
+      ctx.fillStyle=`rgba(52,211,153,${bright*0.8})`;
+      ctx.fill();
+    }
+  }
+  // center glow
+  const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,80);
+  cg.addColorStop(0,'rgba(52,211,153,0.2)'); cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(cx,cy,80,0,Math.PI*2); ctx.fill();
+});
+
+// ═══════════════════════════════════════
+// CTA BACKGROUND — Aurora
+// ═══════════════════════════════════════
+(function(){
+  const c = document.getElementById('cta-canvas');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  let t = 0;
+  function resize(){ c.width=c.offsetWidth; c.height=c.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    const W=c.width,H=c.height;
+    for(let i=0;i<5;i++){
+      const x=W*(0.1+i*0.2)+Math.sin(t*0.5+i)*W*0.05;
+      const y=H*0.5+Math.cos(t*0.3+i*0.7)*H*0.3;
+      const g=ctx.createRadialGradient(x,y,0,x,y,H*0.6);
+      const colors=['79,158,255','167,139,250','52,211,153','248,113,113','251,191,36'];
+      g.addColorStop(0,`rgba(${colors[i]},0.08)`);
+      g.addColorStop(1,'transparent');
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    }
+    t+=0.006;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ═══════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) { e.target.classList.add('visible'); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ═══════════════════════════════════════
+// COUNTER ANIMATION
+// ═══════════════════════════════════════
+function animateCounter(el, target) {
+  let start = 0;
+  const dur = 2000;
+  const s = performance.now();
+  function step(now) {
+    const p = Math.min((now-s)/dur, 1);
+    const ease = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.floor(ease*target) + (target === 12 ? '+' : '');
+    if(p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const statObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      const target = +e.target.dataset.target;
+      if(target) animateCounter(e.target, target);
+      statObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-num[data-target]').forEach(el => statObserver.observe(el));
+</script>
+</body>
+</html>
