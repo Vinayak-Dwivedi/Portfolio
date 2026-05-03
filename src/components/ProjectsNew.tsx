@@ -390,8 +390,6 @@ const Projects: React.FC = () => {
               </a>
             </div>
           </motion.div>
-            </div>
-          </motion.div>
 
           {/* ── Other Projects Grid ── */}
           <motion.div
