@@ -115,7 +115,7 @@ const Chatbot: React.FC = () => {
       } else if (m.includes('bad') || m.includes('not great') || m.includes('tired') || m.includes('meh')) {
         addBotMessage("Aw, hang in there! ⚡ You know what cheers people up? Seeing dope projects. Let me show you what Vinayak has built — might just spark some inspiration! 🚀");
       } else if (m.includes('project') || m.includes('built') || m.includes('work') || m.includes('portfolio')) {
-        addBotMessage("Oh you're gonna love this! 🔥 15+ projects — real-time collaborative tools, AI persona generators, full-stack platforms… The highlight? A whiteboard app that feels like Figma on steroids. Scroll down to see them all!");
+        addBotMessage("Oh you're gonna love this! 🔥 The crown jewels are the **KI Job Portal** (a massive client project with AI & mobile) and **Crank Music Production** (a premium high-end music app). Plus 15+ other projects in full-stack, AI/ML & frontend. Scroll down to see them all! 🚀");
       } else if (m.includes('skill') || m.includes('tech') || m.includes('stack') || m.includes('language')) {
         addBotMessage("His toolkit is *chef's kiss* 👨‍🍳 — React + TypeScript for frontend wizardry, Python for AI/ML sorcery, Node.js for backend muscle. 2+ years of turning coffee into code. ☕→💻");
       } else if (m.includes('contact') || m.includes('hire') || m.includes('available') || m.includes('collab')) {
