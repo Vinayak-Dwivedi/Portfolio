@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
 
   const socialLinks = [
     { icon: Github, href: 'https://github.com/Vinayak-Dwivedi', label: 'GitHub' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/vinayak-dwivedi-4b280b247/', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:vinayakdwivedi2023@gmail.com', label: 'Email' }
   ];
 

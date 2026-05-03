@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-import CustomCursor from './components/CustomCursor';
-import Hero from './components/Hero';
-import Projects from './components/Projects';
-import Navbar from './components/Navbar';
-import Skills from './components/Skills';
-import About from './components/About';
-import Contact from './components/Contact';
-import Footer from './components/Footer';
+import CustomCursor from "./components/CustomCursor";
+import Hero from "./components/HeroNew";
+import Projects from "./components/ProjectsNew";
+import Navbar from "./components/Navbar";
+import Skills from "./components/SkillsNew";
+import About from "./components/About";
+import Contact from "./components/Contact";
+import Footer from "./components/Footer";
+import SmoothScroll from "./components/ui/SmoothScroll";
+import Chatbot from "./components/Chatbot/Chatbot";
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,19 +40,22 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="app">
-      <CustomCursor />
-      <div className="noise" />
-      <Navbar />
-      <main>
-        <Hero />
-        <Projects />
-        <Skills />
-        <About />
-        <Contact />
-      </main>
-      <Footer />
-    </div>
+    <SmoothScroll>
+      <div className="app">
+        <CustomCursor />
+        <div className="noise" />
+        <Navbar />
+        <main>
+          <Hero />
+          <Projects />
+          <Skills />
+          <About />
+          <Contact />
+        </main>
+        <Footer />
+        <Chatbot />
+      </div>
+    </SmoothScroll>
   );
 };
 

@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
 
   const socialLinks = [
     { icon: Github, href: 'https://github.com/Vinayak-Dwivedi', label: 'GitHub' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/vinayak-dwivedi-4b280b247/', label: 'LinkedIn' },
     { icon: Mail, href: 'mailto:vinayakdwivedi2023@gmail.com', label: 'Email' }
   ];
 
@@ -122,6 +122,8 @@ const Navbar: React.FC = () => {
             <motion.a
               key={social.label}
               href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label={social.label}
               style={{
                 color: 'var(--muted)',
