@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useInView as useInViewHook } from 'react-intersection-observer';
-import { Github, ExternalLink, Users, Brain, Palette, Code2, Smartphone, Star, Layers, Music2 } from 'lucide-react';
+import { Github, ExternalLink, Users, Brain, Palette, Code2, Smartphone, Star, Layers, Music2, Search } from 'lucide-react';
 import Card3D from './ui/Card3D';
 import Glassmorphism from './ui/Glassmorphism';
 import ScrollReveal from './ui/ScrollReveal';
@@ -39,6 +39,7 @@ const Projects: React.FC = () => {
     ],
     tech: ["Flutter", "Dart", "Firebase", "Node.js", "AI/ML", "React", "Riverpod", "Razorpay"],
     githubUrl: "https://github.com/Vinayak-Dwivedi/Portfolio",
+    adminUrl: "https://ki-job-portal.web.app/",
     category: "Client Project · Full-Stack · Mobile · AI",
   };
 
@@ -86,14 +87,13 @@ const Projects: React.FC = () => {
     },
     {
       id: 3,
-      title: "Portfolio Website",
+      title: "AI Missing Person Finder",
       description:
-        "A modern, responsive portfolio website built with React and TypeScript featuring smooth animations and glassmorphism UI.",
-      tech: ["React", "TypeScript", "Tailwind CSS", "Framer Motion"],
-      githubUrl: "https://github.com/Vinayak-Dwivedi/Portfolio",
-      liveUrl: "https://vinayak-portfolio.netlify.app/",
-      icon: <Palette size={24} />,
-      category: "Frontend",
+        "An AI-powered application designed to help locate missing persons using facial recognition techniques, MediaPipe, and Streamlit.",
+      tech: ["Python", "Streamlit", "MediaPipe", "SQLite"],
+      githubUrl: "https://github.com/Vinayak-Dwivedi/Major_Project",
+      icon: <Search size={24} />,
+      category: "AI/ML",
       featured: false,
     },
     {
@@ -256,6 +256,15 @@ const Projects: React.FC = () => {
                         >
                           <Github size={16} /> View Repo
                         </div>
+                        {heroProject.adminUrl && (
+                          <div
+                            onClick={(e) => { e.preventDefault(); window.open(heroProject.adminUrl, '_blank'); }}
+                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-white/10"
+                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#f1f5f9' }}
+                          >
+                            <ExternalLink size={16} /> Admin Portal
+                          </div>
+                        )}
                       </div>
                     </div>
 
