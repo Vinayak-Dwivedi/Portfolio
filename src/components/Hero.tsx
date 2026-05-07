@@ -450,7 +450,7 @@ const Hero: React.FC = () => {
             }}
           />
           <motion.img
-            src="/publicmedia/profile_pic.jpeg"
+            src="/media/profile_pic.jpeg"
             alt="Profile"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}

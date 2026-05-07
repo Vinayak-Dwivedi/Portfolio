@@ -194,7 +194,7 @@ const Hero: React.FC = () => {
                 {/* Profile Image */}
                 <div className="absolute inset-8 rounded-full overflow-hidden border-4 border-electric-blue/50 shadow-[0_0_40px_rgba(79,158,255,0.4)]">
                   <img
-                    src="/publicmedia/profile_pic.jpeg"
+                    src="/media/profile_pic.jpeg"
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
